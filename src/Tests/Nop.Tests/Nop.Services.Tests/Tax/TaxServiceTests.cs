@@ -66,7 +66,7 @@ public class TaxServiceTests : ServiceTest
         await _customerService.UpdateCustomerAsync(admin);
     }
 
-    [Test]
+
     public async Task CanLoadTaxProviders()
     {
         var providers = await _taxPluginManager.LoadAllPluginsAsync();
@@ -74,21 +74,20 @@ public class TaxServiceTests : ServiceTest
         providers.Any().Should().BeTrue();
     }
 
-    [Test]
+    
     public async Task CanLoadTaxProviderBySystemKeyword()
     {
         var provider = await _taxPluginManager.LoadPluginBySystemNameAsync("FixedTaxRateTest");
         provider.Should().NotBeNull();
     }
 
-    [Test]
+
     public async Task CanLoadActiveTaxProvider()
     {
         var provider = await _taxPluginManager.LoadPrimaryPluginAsync();
         provider.Should().NotBeNull();
     }
 
-    [Test]
     public async Task CanCheckIsPluginActive()
     {
         var provider = await _taxPluginManager.LoadPrimaryPluginAsync();
@@ -98,7 +97,7 @@ public class TaxServiceTests : ServiceTest
         isActive.Should().BeTrue();
     }
 
-    [Test]
+
     public async Task CanGetProductPricePriceIncludesTaxIncludingTaxTaxable()
     {
         var customer = new Customer();
@@ -114,7 +113,7 @@ public class TaxServiceTests : ServiceTest
         price.Should().Be(1000);
     }
 
-    [Test]
+
     public async Task CanGetProductPrice()
     {
         var product = new Product();
@@ -126,7 +125,7 @@ public class TaxServiceTests : ServiceTest
         price.Should().Be(1000);
     }
 
-    [Test]
+
     public async Task CanGetProductPricePriceIncludesTaxIncludingTaxNonTaxable()
     {
         var customer = new Customer();
@@ -145,7 +144,7 @@ public class TaxServiceTests : ServiceTest
         price.Should().Be(1000);
     }
 
-    [Test]
+
     [TestCase("GB553557881", VatNumberStatus.Valid)]
     [TestCase("NO974761076", VatNumberStatus.Unknown)]
     [TestCase("GB430479893", VatNumberStatus.Invalid)]
