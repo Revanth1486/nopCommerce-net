@@ -40,13 +40,14 @@ jobs:
             -reports:test-results/trx/*.trx \
             -targetdir:test-results/html
 
-      - name: Generate JUnit test report
+      - name: Install trx2junit tool
+        run: dotnet tool install -g trx2junit
+
+      - name: Convert TRX to JUnit
         run: |
           mkdir -p test-results/junit
-          reportgenerator \
-            -reports:test-results/trx/*.trx \
-            -targetdir:test-results/junit \
-            -reporttypes:JUnit2
+          trx2junit test-results/trx/*.trx
+          mv *.xml test-results/junit/
 
       - name: Publish application
         run: dotnet publish --configuration Release src/Presentation/Nop.Web/Nop.Web.csproj --output published
