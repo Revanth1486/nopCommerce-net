@@ -20,7 +20,12 @@ jobs:
           run: dotnet restore src/Presentation/Nop.Web/Nop.Web.csproj
         - name: build
           run: dotnet build --configuration Debug src/Presentation/Nop.Web/Nop.Web.csproj
-        - name: test
-          run: dotnet test src/Tests/Nop.Tests/Nop.Tests.csproj
+        - name: test (generate trx report)
+          run: |
+           mkdir -p test-results/trx
+           dotnet test src/Tests/Nop.Tests/Nop.Tests.csproj \
+           --logger "trx;LogFilePrefix=testResults" \
+           --results-directory test-results/trx
+
         - name: publish
           run: dotnet publish --configuration Release src/Presentation/Nop.Web/Nop.Web.csproj --output published
