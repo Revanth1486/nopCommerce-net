@@ -27,5 +27,15 @@ jobs:
            --logger "trx;LogFilePrefix=testResults" \
            --results-directory test-results/trx
 
+        - name: Install ReportGenerator
+          run: dotnet tool install -g dotnet-reportgenerator-globaltool
+        - name: Generate HTML test report
+          run: |
+           mkdir -p test-results/html
+           reportgenerator \
+            -reports:test-results/trx/*.trx \
+            -targetdir:test-results/html
+ 
+ 
         - name: publish
           run: dotnet publish --configuration Release src/Presentation/Nop.Web/Nop.Web.csproj --output published
