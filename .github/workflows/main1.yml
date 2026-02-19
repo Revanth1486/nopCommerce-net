@@ -1,48 +1,64 @@
-
----
 on:
-    pull_request:
-        branches:
-        - develop
-    workflow_dispatch:
+  pull_request:
+    branches:
+      - develop
+  workflow_dispatch:
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        steps:
-        - name: Setup dotnet
-          uses: actions/setup-dotnet@v5
-          with:
-            dotnet-version: | 
-              9.0.x
-        - uses: actions/checkout@v5
-        - name: restore
-          run: dotnet restore src/Presentation/Nop.Web/Nop.Web.csproj
-        - name: build
-          run: dotnet build --configuration Debug src/Presentation/Nop.Web/Nop.Web.csproj
-        - name: test (generate trx report)
-          run: |
-           mkdir -p test-results/trx
-           dotnet test src/Tests/Nop.Tests/Nop.Tests.csproj \
-           --logger "trx;LogFilePrefix=testResults" \
-           --results-directory test-results/trx
+  build:
+    runs-on: ubuntu-latest
 
-        - name: Install ReportGenerator
-          run: dotnet tool install -g dotnet-reportgenerator-globaltool
-        - name: Generate HTML test report
-          run: |
-           mkdir -p test-results/html
-           reportgenerator \
+    steps:
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Restore dependencies
+        run: dotnet restore src/Presentation/Nop.Web/Nop.Web.csproj
+
+      - name: Build project
+        run: dotnet build --configuration Debug src/Presentation/Nop.Web/Nop.Web.csproj
+
+      - name: Test (generate TRX report)
+        run: |
+          mkdir -p test-results/trx
+          dotnet test src/Tests/Nop.Tests/Nop.Tests.csproj \
+            --logger "trx;LogFilePrefix=testResults" \
+            --results-directory test-results/trx
+
+      - name: Install ReportGenerator
+        run: dotnet tool install -g dotnet-reportgenerator-globaltool
+
+      - name: Generate HTML test report
+        run: |
+          mkdir -p test-results/html
+          reportgenerator \
             -reports:test-results/trx/*.trx \
             -targetdir:test-results/html
 
-        - name: Generate JUnit test report
-          run: |
-            mkdir -p test-results/junit
-            reportgenerator \
-             -reports:test-results/trx/*.trx \
-             -targetdir:test-results/junit \
-             -reporttypes:JUnit2
- 
-        - name: publish
-          run: dotnet publish --configuration Release src/Presentation/Nop.Web/Nop.Web.csproj --output published
+      - name: Generate JUnit test report
+        run: |
+          mkdir -p test-results/junit
+          reportgenerator \
+            -reports:test-results/trx/*.trx \
+            -targetdir:test-results/junit \
+            -reporttypes:JUnit2
+
+      - name: Publish application
+        run: dotnet publish --configuration Release src/Presentation/Nop.Web/Nop.Web.csproj --output published
+
+      - name: Zip published output
+        run: |
+          zip -r ${GITHUB_REPOSITORY##*/}-${{ github.run_number }}.zip published
+
+      - name: Upload build and test artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ github.run_number }}
+          path: |
+            ${GITHUB_REPOSITORY##*/}-${{ github.run_number }}.zip
+            test-results/
