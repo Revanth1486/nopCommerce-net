@@ -42,7 +42,7 @@ jobs:
             reportgenerator \
              -reports:test-results/trx/*.trx \
              -targetdir:test-results/junit \
-             -reporttypes:JUnit
+             -reporttypes:JUnit2
  
         - name: publish
           run: dotnet publish --configuration Release src/Presentation/Nop.Web/Nop.Web.csproj --output published
