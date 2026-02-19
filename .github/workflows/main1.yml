@@ -35,7 +35,16 @@ jobs:
            reportgenerator \
             -reports:test-results/trx/*.trx \
             -targetdir:test-results/html
- 
+
+        - name: Install trx2junit
+          run: pip install trx2junit
+         
+        - name: Convert TRX to JUnit
+          run: |
+            mkdir -p test-results/junit
+            trx2junit test-results/trx/*.trx
+            mv *.xml test-results/junit/
+
  
         - name: publish
           run: dotnet publish --configuration Release src/Presentation/Nop.Web/Nop.Web.csproj --output published
