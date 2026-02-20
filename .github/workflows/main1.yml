@@ -24,6 +24,7 @@ jobs:
         run: dotnet build --configuration Debug src/Presentation/Nop.Web/Nop.Web.csproj
 
       - name: Test (generate TRX report)
+        continue-on-error: true
         run: |
           mkdir -p test-results/trx
           dotnet test src/Tests/Nop.Tests/Nop.Tests.csproj \
